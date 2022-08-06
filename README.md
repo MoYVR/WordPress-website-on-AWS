@@ -1,2 +1,1 @@
-# Project01
-Mentor Project 01
+Automating AWS with Terraform
