@@ -60,7 +60,7 @@ resource "aws_internet_gateway" "main" {
 
 # EIP
 resource "aws_eip" "nat" {
-  count = length(var.eip)
+  count = var.eip
   vpc   = true
 
 }
@@ -70,8 +70,8 @@ resource "aws_eip" "nat" {
 # NAT Gateway
 
 resource "aws_nat_gateway" "main" {
-  count         = length(var.nat_gateway)
-  allocation_id = var.eip
+  count         = var.nat_gateway
+  allocation_id = aws_eip.nat[count.index].id
   subnet_id     = aws_subnet.public[count.index].id
 
   tags = {
@@ -84,7 +84,7 @@ resource "aws_nat_gateway" "main" {
 # Public Route Table
 
 resource "aws_route_table" "public" {
-  count  = length(var.public_route_table)
+  count  = var.public_route_table
   vpc_id = aws_vpc.main.id
 
   route {
@@ -99,7 +99,7 @@ resource "aws_route_table" "public" {
 # Private Route Table
 
 resource "aws_route_table" "private" {
-  count  = length(var.private_route_table)
+  count  = var.private_route_table
   vpc_id = aws_vpc.main.id
 
   route {
@@ -115,7 +115,7 @@ resource "aws_route_table" "private" {
 # Public Route Tables Association
 
 resource "aws_route_table_association" "public" {
-  count          = length(var.public_route_table_association)
+  count          = var.public_route_table_association
   subnet_id      = aws_subnet.public[count.index].id
   route_table_id = aws_route_table.public[count.index].id
 }
@@ -123,7 +123,7 @@ resource "aws_route_table_association" "public" {
 #Private Route Table Association
 
 resource "aws_route_table_association" "private" {
-  count          = length(var.private_route_table_association)
+  count          = var.private_route_table_association
   subnet_id      = aws_subnet.private[count.index].id
   route_table_id = aws_route_table.private[count.index].id
 }
