@@ -12,13 +12,13 @@ terraform {
 # Region
 
 provider "aws" {
-  region  = "us-east-1"
+  region = "us-east-1"
 }
 
 # VPC
 
 resource "aws_vpc" "main" {
-  cidr_block       = var.vpc_cidr
+  cidr_block = var.vpc_cidr
 
   tags = {
     Name = var.env_code
@@ -28,7 +28,7 @@ resource "aws_vpc" "main" {
 # Public_Subnet 1&2
 
 resource "aws_subnet" "public" {
-  count = length (var.public_cidr)
+  count      = length(var.public_cidr)
   vpc_id     = aws_vpc.main.id
   cidr_block = var.public_cidr[count.index]
 
@@ -40,7 +40,7 @@ resource "aws_subnet" "public" {
 # Private_Subnet 1&2
 
 resource "aws_subnet" "private" {
-  count = length (var.private_cidr)
+  count      = length(var.private_cidr)
   vpc_id     = aws_vpc.main.id
   cidr_block = var.private_cidr[count.index]
 
@@ -60,8 +60,8 @@ resource "aws_internet_gateway" "main" {
 
 # EIP
 resource "aws_eip" "nat" {
-count = 2  
-vpc                       = true
+  count = length(var.eip)
+  vpc   = true
 
 }
 
@@ -70,28 +70,28 @@ vpc                       = true
 # NAT Gateway
 
 resource "aws_nat_gateway" "main" {
-  count = 2
-  allocation_id = aws_eip.nat[count.index].id
+  count         = length(var.nat_gateway)
+  allocation_id = var.eip
   subnet_id     = aws_subnet.public[count.index].id
 
   tags = {
     Name = "${var.env_code}-gw NAT${count.index}"
   }
 
-    depends_on = [aws_internet_gateway.main]
+  depends_on = [aws_internet_gateway.main]
 }
 
 # Public Route Table
 
 resource "aws_route_table" "public" {
-  count = 2
+  count  = length(var.public_route_table)
   vpc_id = aws_vpc.main.id
 
-route {
+  route {
     cidr_block = "0.0.0.0/0"
     gateway_id = aws_internet_gateway.main.id
   }
-    tags = {
+  tags = {
     Name = "${var.env_code}-public${count.index}"
   }
 }
@@ -99,30 +99,31 @@ route {
 # Private Route Table
 
 resource "aws_route_table" "private" {
-  count = 2
+  count  = length(var.private_route_table)
   vpc_id = aws_vpc.main.id
 
   route {
-    cidr_block = "0.0.0.0/0"
-    nat_gateway_id  = aws_nat_gateway.main[count.index].id
+    cidr_block     = "0.0.0.0/0"
+    nat_gateway_id = aws_nat_gateway.main[count.index].id
   }
 
-    tags = {
+  tags = {
     Name = "${var.env_code}-private${count.index}"
   }
 }
 
-# Public Route Tables
+# Public Route Tables Association
 
 resource "aws_route_table_association" "public" {
-  count = 2
+  count          = length(var.public_route_table_association)
   subnet_id      = aws_subnet.public[count.index].id
   route_table_id = aws_route_table.public[count.index].id
 }
 
-#Private Route Table
+#Private Route Table Association
+
 resource "aws_route_table_association" "private" {
-  count = 2
+  count          = length(var.private_route_table_association)
   subnet_id      = aws_subnet.private[count.index].id
   route_table_id = aws_route_table.private[count.index].id
 }
@@ -131,11 +132,11 @@ resource "aws_route_table_association" "private" {
 # Public EC2
 
 resource "aws_instance" "public" {
-  ami           = "ami-090fa75af13c156b4"
-  instance_type = "t2.micro"
-  associate_public_ip_address  = true
-  subnet_id  = aws_subnet.public.0.id
-  key_name= "moz"
+  ami                         = "ami-090fa75af13c156b4"
+  instance_type               = "t2.micro"
+  associate_public_ip_address = true
+  subnet_id                   = aws_subnet.public.0.id
+  key_name                    = "moz"
 
   tags = {
     Name = "${var.env_code}-Public"
@@ -147,8 +148,8 @@ resource "aws_instance" "public" {
 resource "aws_instance" "private" {
   ami           = "ami-090fa75af13c156b4"
   instance_type = "t2.micro"
-  subnet_id  = aws_subnet.private.0.id
-  key_name= "moz"
+  subnet_id     = aws_subnet.private.0.id
+  key_name      = "moz"
 
 
   tags = {
