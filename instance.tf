@@ -5,7 +5,7 @@ resource "aws_instance" "public" {
   instance_type               = "t2.micro"
   associate_public_ip_address = true
   subnet_id                   = aws_subnet.public.0.id
-  key_name                    = "moz"
+  key_name                    = "main"
   vpc_security_group_ids      = [aws_security_group.public.id]
 
   tags = {
@@ -19,7 +19,7 @@ resource "aws_instance" "private" {
   ami                    = "ami-090fa75af13c156b4"
   instance_type          = "t2.micro"
   subnet_id              = aws_subnet.private.0.id
-  key_name               = "moz"
+  key_name               = "main"
   vpc_security_group_ids = [aws_security_group.private.id]
 
   tags = {
