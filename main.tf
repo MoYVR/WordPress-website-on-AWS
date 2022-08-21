@@ -128,33 +128,3 @@ resource "aws_route_table_association" "private" {
   route_table_id = aws_route_table.private[count.index].id
 }
 
-
-# Public EC2
-
-resource "aws_instance" "public" {
-  ami                         = "ami-090fa75af13c156b4"
-  instance_type               = "t2.micro"
-  associate_public_ip_address = true
-  subnet_id                   = aws_subnet.public.0.id
-  key_name                    = "moz"
-
-  tags = {
-    Name = "${var.env_code}-Public"
-  }
-}
-
-# Private EC2
-
-resource "aws_instance" "private" {
-  ami           = "ami-090fa75af13c156b4"
-  instance_type = "t2.micro"
-  subnet_id     = aws_subnet.private.0.id
-  key_name      = "moz"
-
-
-  tags = {
-    Name = "${var.env_code}-Private"
-  }
-}
-
- 
