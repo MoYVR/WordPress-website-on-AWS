@@ -1,7 +1,29 @@
+data "aws_ami" "ec2" {
+    
+  filter {
+      
+      name   = "name"
+      values = ["amzn-ami-hvm-*"]
+  }
+  
+  most_recent = true
+  owners = ["amazon"]
+
+  tags = {
+    Name   = "${var.env_code}-EC2"
+  }
+}
+
+output "ec2_ami" {
+  value = data.aws_ami.ec2
+}
+
+
+
 # Public EC2
 
 resource "aws_instance" "public" {
-  ami                         = "ami-090fa75af13c156b4"
+  ami                         = data.aws_ami.ec2.id
   instance_type               = "t2.micro"
   associate_public_ip_address = true
   subnet_id                   = aws_subnet.public.0.id
@@ -16,7 +38,7 @@ resource "aws_instance" "public" {
 # Private EC2
 
 resource "aws_instance" "private" {
-  ami                    = "ami-090fa75af13c156b4"
+  ami                    = data.aws_ami.ec2.id
   instance_type          = "t2.micro"
   subnet_id              = aws_subnet.private.0.id
   key_name               = "main"
