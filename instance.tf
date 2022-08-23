@@ -1,9 +1,10 @@
+# EC2 Data Source
 data "aws_ami" "ec2" {
     
   filter {
       
-      name   = "name"
-      values = ["amzn-ami-hvm-*"]
+    name   = "name"
+    values = ["amzn-ami-hvm-*"]
   }
   
   most_recent = true
