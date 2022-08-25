@@ -1,16 +1,16 @@
 # EC2 Data Source
 data "aws_ami" "ec2" {
-    
+
   filter {
     name   = "name"
     values = ["amzn2-ami-kernel-*"]
   }
-  
+
   most_recent = true
-  owners = ["amazon"]
+  owners      = ["amazon"]
 
   tags = {
-    Name   = "${var.env_code}-EC2"
+    Name = "${var.env_code}-EC2"
   }
 }
 
@@ -27,7 +27,7 @@ resource "aws_instance" "public" {
   subnet_id                   = aws_subnet.public.0.id
   key_name                    = "main"
   vpc_security_group_ids      = [aws_security_group.public.id]
-  user_data = file("user-data.sh")
+  user_data                   = file("user-data.sh")
   tags = {
     Name = "${var.env_code}-Public"
   }
