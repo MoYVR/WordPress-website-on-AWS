@@ -2,7 +2,6 @@
 data "aws_ami" "ec2" {
     
   filter {
-      
     name   = "name"
     values = ["amzn-ami-hvm-*"]
   }
