@@ -18,8 +18,6 @@ output "ec2_ami" {
   value = data.aws_ami.ec2
 }
 
-
-
 # Public EC2
 
 resource "aws_instance" "public" {
