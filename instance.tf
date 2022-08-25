@@ -3,7 +3,7 @@ data "aws_ami" "ec2" {
     
   filter {
     name   = "name"
-    values = ["amzn-ami-hvm-*"]
+    values = ["amzn2-ami-kernel-*"]
   }
   
   most_recent = true
@@ -27,7 +27,7 @@ resource "aws_instance" "public" {
   subnet_id                   = aws_subnet.public.0.id
   key_name                    = "main"
   vpc_security_group_ids      = [aws_security_group.public.id]
-
+  user_data = file("user-data.sh")
   tags = {
     Name = "${var.env_code}-Public"
   }
@@ -51,13 +51,23 @@ resource "aws_instance" "private" {
 
 resource "aws_security_group" "public" {
   name        = "${var.env_code}-public"
-  description = "Allow SSH inbound traffic"
+  description = "Allow SSH & HTTP inbound traffic"
   vpc_id      = aws_vpc.main.id
 
   ingress {
     description = "SSH from public"
     from_port   = 22
     to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["96.49.56.42/32"]
+
+  }
+
+
+  ingress {
+    description = "HTTP from public"
+    from_port   = 80
+    to_port     = 80
     protocol    = "tcp"
     cidr_blocks = ["96.49.56.42/32"]
 
