@@ -7,6 +7,13 @@ terraform {
   }
 
   required_version = ">= 1.2.0"
+
+   backend "s3" {
+    bucket = "terraformstatelabmo"
+    key    = "terraform.tfstate"
+    region = "us-east-1"
+    dynamodb_table = "terraform-remote-state"
+  }
 }
 
 # Region
