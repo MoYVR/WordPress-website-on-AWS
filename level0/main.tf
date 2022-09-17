@@ -6,7 +6,6 @@ resource "aws_s3_bucket" "main" {
   }
 }
 
-
 resource "aws_s3_bucket" "terraform_remote_state" {
   bucket = "terraformstatelabmo"
 }
