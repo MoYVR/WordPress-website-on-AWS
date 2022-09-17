@@ -21,6 +21,4 @@ resource "aws_dynamodb_table" "terraform_remote_state" {
     name = "LockID"
     type = "S"
   }
-
 }
-
