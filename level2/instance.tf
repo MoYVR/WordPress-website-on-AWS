@@ -27,7 +27,7 @@ resource "aws_instance" "public" {
   subnet_id                   = data.terraform_remote_state.level1.outputs.public_subnet_id[0]
   key_name                    = "main"
   vpc_security_group_ids      = [aws_security_group.public.id]
-  user_data                   = file("user-data.sh")
+
   tags = {
     Name = "${var.env_code}-Public"
   }
@@ -36,10 +36,10 @@ resource "aws_instance" "public" {
 # Private EC2
 
 resource "aws_instance" "private" {
-  ami           = data.aws_ami.ec2.id
-  instance_type = "t2.micro"
-  subnet_id     = data.terraform_remote_state.level1.outputs.private_subnet_id[0]
-
+  ami                    = data.aws_ami.ec2.id
+  instance_type          = "t2.micro"
+  subnet_id              = data.terraform_remote_state.level1.outputs.private_subnet_id[0]
+  user_data              = file("user-data.sh")
   key_name               = "main"
   vpc_security_group_ids = [aws_security_group.private.id]
 
@@ -97,6 +97,14 @@ resource "aws_security_group" "private" {
     to_port     = 22
     protocol    = "tcp"
     cidr_blocks = ["10.0.0.0/16"]
+  }
+
+  ingress {
+    description     = "HTTP from load balancer"
+    from_port       = 80
+    to_port         = 80
+    protocol        = "tcp"
+    security_groups = [aws_security_group.load_balancer.id]
   }
 
   egress {
