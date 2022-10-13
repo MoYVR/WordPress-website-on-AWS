@@ -33,21 +33,6 @@ resource "aws_instance" "public" {
   }
 }
 
-# Private EC2
-
-resource "aws_instance" "private" {
-  ami                    = data.aws_ami.ec2.id
-  instance_type          = "t2.micro"
-  subnet_id              = data.terraform_remote_state.level1.outputs.private_subnet_id[0]
-  user_data              = file("user-data.sh")
-  key_name               = "main"
-  vpc_security_group_ids = [aws_security_group.private.id]
-
-  tags = {
-    Name = "${var.env_code}-Private"
-  }
-}
-
 # Public Security Group
 
 resource "aws_security_group" "public" {
