@@ -48,8 +48,6 @@ resource "aws_eip" "nat" {
 
 }
 
-
-
 # NAT Gateway
 
 resource "aws_nat_gateway" "main" {
