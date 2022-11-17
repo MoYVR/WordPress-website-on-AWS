@@ -7,3 +7,4 @@ variable "vpc_id" {}
 variable "load_balancer_sg" {}
 
 variable "target_group_arn" {}
+
